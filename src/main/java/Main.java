@@ -6,7 +6,8 @@ public class Main {
 
     public static void main(String args[])
     {
-        Game game = new Game(new RandomPlayer("a"), new RandomPlayer("b"));
+        //Game game = new Game(new RandomPlayer("a"), new RandomPlayer("b"));
+        Game game = new Game(new RandomPlayer("a"), new MontecarloPlayer("b"));
         Player winner = game.simulate();
         game.getHistory().printHistory();
 

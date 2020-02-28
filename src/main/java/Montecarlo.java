@@ -13,14 +13,19 @@ public class Montecarlo {
     public Montecarlo( GameMC gameMC, Integer ucb1Param){
         this.gameMC = gameMC;
         this.ucb1Param = ucb1Param;
-        this.nodeMap = new HashMap<Integer, MontecarloNode>();
+        this.nodeMap = new HashMap<>();
     }
 
     public void makeNode(GameStateMC stateMC){
+        System.out.println("Inside makeNode Method");
         if(!this.nodeMap.containsKey(stateMC.hashCode())){
+            //System.out.println("inside if");
             List<Move> unexpandedPlays = this.gameMC.legalPlays(stateMC);
+            System.out.println("legalpalys are calculated");
             MontecarloNode node = new MontecarloNode(null, null, stateMC, unexpandedPlays);
+
             this.nodeMap.put(stateMC.hashCode(), node);
+            //System.out.println("node has been created");
         }
     }
 
@@ -154,17 +159,21 @@ public class Montecarlo {
     }
 
     public MontecarloStatistics runSearch(GameStateMC stateMC, Integer timeout){
+        System.out.println("Inside runsearch method, stateMC node has been created");
         this.makeNode(stateMC);
+
         Integer draws = 0;
         Integer totalSims = 0;
         long end = System.currentTimeMillis() + timeout * 1000;
         while(System.currentTimeMillis() < end){
             MontecarloNode node = this.select(stateMC);
+
             Integer winner = null;
             if(this.gameMC.hasPlayer1Won())
                 winner = 1;
             else if (this.gameMC.hasPlayer2Won())
                 winner = 2;
+            System.out.println("inside runsearch before backpropogate");
             if(node.isLeaf() && winner == null){
                 node = this.expand(node);
                 winner = this.simulate(node);

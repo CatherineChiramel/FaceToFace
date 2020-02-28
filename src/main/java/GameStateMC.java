@@ -20,6 +20,7 @@ public class GameStateMC {
         this.cardsOnOwnDescendingDiscardPile = cardsOnOwnDescendingDiscardPile;
         this.cardsOnOpponentsAscendingDiscardPile = cardsOnOpponentsAscendingDiscardPile;
         this.cardsOnOpponentsDescendingDiscardPile = cardsOnOpponentsDescendingDiscardPile;
+
     }
 
     public List<Card> getHandCards() {

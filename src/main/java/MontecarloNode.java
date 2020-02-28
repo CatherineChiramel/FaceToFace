@@ -3,6 +3,7 @@ import de.upb.isml.thegamef2f.engine.Move;
 import de.upb.isml.thegamef2f.engine.Placement;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -16,16 +17,20 @@ public class MontecarloNode {
     Map<Integer, MontecarloNode> childNodeMap;
 
     public MontecarloNode(MontecarloNode parentNode, Move lastMove, GameStateMC stateMC, List<Move> unexpandedPlays) {
+        childPlayMap = new HashMap<>();
+        childNodeMap = new HashMap<>();
         this.parentNode = parentNode;
         this.lastMove = lastMove;
         this.stateMC = stateMC;
         this.unexpandedPlays = unexpandedPlays;
         this.nPlays = 0;
         this.nWins = 0;
+
         for(Move play: unexpandedPlays){
             childPlayMap.put(play.hashCode(),play);
             childNodeMap.put(play.hashCode(),null);
         }
+        //System.out.println("inside the montecarlonode constructor"+ unexpandedPlays.size());
     }
 
     public  MontecarloNode childNode(Move play){

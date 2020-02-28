@@ -9,14 +9,22 @@ import java.util.stream.Collectors;
 
 
 public class GameMC {
-    protected Random random;
+    protected Random random = new Random();
     protected GameHistory gameHistory;
     protected Player player1;
-    protected PlayerBoard playerBoard1;
+    protected PlayerBoardMC playerBoard1;
     protected Player player2;
-    protected PlayerBoard playerBoard2;
+    protected PlayerBoardMC playerBoard2;
+
+    public GameMC (Player player1, PlayerBoardMC playerBoard1, Player player2, PlayerBoardMC playerBoard2) {
+        this.player1 = player1;
+        this.playerBoard1 = playerBoard1;
+        this.player2 = player2;
+        this.playerBoard2 = playerBoard2;
+    }
 
     public List<Move> legalPlays(GameStateMC gameState){
+        //System.out.println("inside legalPlays");
         GameStateMC currentGameState = gameState;
         boolean placedOnOpponentsPiles = false;
         List<Move> legalMoves = new ArrayList<Move>();
@@ -24,6 +32,7 @@ public class GameMC {
         Placement randomPlacement;
         List<Placement> validPlacements = new ArrayList();
         Iterator var6 = currentGameState.getHandCards().iterator();
+
         // Find the valid placements in the given state
         while(var6.hasNext()) {
             Card card = (Card)var6.next();
@@ -37,10 +46,12 @@ public class GameMC {
                 }
             }
         }
+        //System.out.println("validplacements have been calculated");
         if (validPlacements.isEmpty()) {
             return null;
         }
         // Calculate moves from each of the valid placements possible
+
         for(int i=0; i<validPlacements.size(); i++){
             placementsOfMove = new ArrayList();
             if (validPlacements.get(i).getPosition() == CardPosition.OPPONENTS_ASCENDING_DISCARD_PILE || validPlacements.get(i).getPosition() == CardPosition.OPPONENTS_DESCENDING_DISCARD_PILE) {
@@ -50,6 +61,7 @@ public class GameMC {
             randomPlacement = validPlacements.get(i);
             currentGameState = this.computeNewGameStateAfterPlacement(currentGameState, randomPlacement);
             for(;!currentGameState.getHandCards().isEmpty(); currentGameState = this.computeNewGameStateAfterPlacement(currentGameState, randomPlacement)) {
+                //System.out.println("inside for loop");
                 List<Placement> validPlacements1 = new ArrayList();
                 Iterator var61 = currentGameState.getHandCards().iterator();
                 while(var61.hasNext()) {
@@ -64,10 +76,14 @@ public class GameMC {
                         }
                     }
                 }
+                //System.out.println("after while");
                 if (validPlacements1.isEmpty()) {
+                    //System.out.println("validplacements1 is empty");
                      break;
                 }
-                randomPlacement = (Placement)validPlacements.get(this.random.nextInt(validPlacements.size()));
+                //System.out.println("sfgdj" +this.random.nextInt(validPlacements1.size()));
+                randomPlacement = (Placement)validPlacements1.get(this.random.nextInt(validPlacements1.size()));
+
                 if (randomPlacement.getPosition() == CardPosition.OPPONENTS_ASCENDING_DISCARD_PILE || randomPlacement.getPosition() == CardPosition.OPPONENTS_DESCENDING_DISCARD_PILE) {
                     placedOnOpponentsPiles = true;
                 }
@@ -174,8 +190,8 @@ public class GameMC {
     private boolean applyPlacement(boolean player1, Placement placement) {
         boolean helpedOpponent = false;
         Card card = placement.getCard();
-        PlayerBoard ownPlayerBoard;
-        PlayerBoard opponentsPlayerBoard;
+        PlayerBoardMC ownPlayerBoard;
+        PlayerBoardMC opponentsPlayerBoard;
         if (player1) {
             ownPlayerBoard = this.playerBoard1;
             opponentsPlayerBoard = this.playerBoard2;
@@ -242,11 +258,14 @@ public class GameMC {
     }
 
     public boolean hasPlayer1Won() {
+
+        boolean a = this.playerBoard1.getHandCards().isEmpty() && this.playerBoard1.getDrawPile().isEmpty();
+        System.out.println("inside hasplayer1won" + a);
         return this.playerBoard1.getHandCards().isEmpty() && this.playerBoard1.getDrawPile().isEmpty();
     }
 
     public boolean isMoveValid(Move move, boolean player1) {
-        PlayerBoard playerBoard = player1 ? this.playerBoard1 : this.playerBoard2;
+        PlayerBoardMC playerBoard = player1 ? this.playerBoard1 : this.playerBoard2;
         if (move == null) {
             return false;
         } else if (move.getPlacements().size() <= 6 && (move.getPlacements().size() >= 2 || playerBoard.getHandCards().size() < 2)) {
