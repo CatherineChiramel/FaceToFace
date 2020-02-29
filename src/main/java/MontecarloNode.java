@@ -1,6 +1,5 @@
 
 import de.upb.isml.thegamef2f.engine.Move;
-import de.upb.isml.thegamef2f.engine.Placement;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -36,14 +35,17 @@ public class MontecarloNode {
     public  MontecarloNode childNode(Move play){
         MontecarloNode child = this.childNodeMap.get(play.hashCode());
         if(child == null){
-            System.out.println("Child is not expanded");
+            //System.out.println("Child is not expanded");
+        } else {
+            //System.out.println("child is expanded");
         }
+
         return child;
     }
 
     public MontecarloNode expand(Move play, GameStateMC childState, List<Move> unexpandedPlays){
         if(!this.childPlayMap.containsKey(play.hashCode())){
-            System.out.println("No such play");
+            //System.out.println("No such play");
             return null;
         }
         MontecarloNode childNode = new MontecarloNode(this, play, childState, unexpandedPlays);
@@ -79,10 +81,15 @@ public class MontecarloNode {
     }
 
     public boolean isLeaf(){
-        if(this.childNodeMap.isEmpty()){
-            return true;
+        //System.out.println("inside isleaf");
+        for(Integer key: this.childNodeMap.keySet()) {
+            if(this.childNodeMap.get(key) != null){
+
+                return false;
+            }
         }
-        return false;
+
+        return true;
     }
 
     public double getUCB1(double biasParam){

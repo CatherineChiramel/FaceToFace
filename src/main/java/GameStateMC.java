@@ -3,6 +3,8 @@
 // (powered by Fernflower decompiler)
 //
 
+
+import de.upb.isml.thegamef2f.engine.Move;
 import de.upb.isml.thegamef2f.engine.board.Card;
 import java.util.List;
 
@@ -60,8 +62,22 @@ public class GameStateMC {
     }
 
     public boolean isPlayer(boolean player){
-        if(this.player == player)
+        //System.out.println("inside isplayer method");
+        try{
+        if(this.player == player){
+            //System.out.println("inside if");
             return true;
+        }}catch (Exception e){
+            e.printStackTrace();
+        }
+
         return false;
+    }
+
+    public String hash(GameStateMC gameStateMC, Move move){
+        String stateHashcode = Integer.toString(gameStateMC.hashCode());
+        String moveHashcode = Integer.toString(move.hashCode());
+        String hash = stateHashcode + moveHashcode;
+        return hash;
     }
 }

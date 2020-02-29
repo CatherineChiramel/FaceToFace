@@ -1,16 +1,14 @@
 import de.upb.isml.thegamef2f.engine.*;
 
 import de.upb.isml.thegamef2f.engine.board.Card;
-import de.upb.isml.thegamef2f.engine.board.PlayerBoard;
 import de.upb.isml.thegamef2f.engine.player.Player;
-
 import java.util.*;
 import java.util.stream.Collectors;
 
 
 public class GameMC {
     protected Random random = new Random();
-    protected GameHistory gameHistory;
+    //protected GameHistory gameHistory;
     protected Player player1;
     protected PlayerBoardMC playerBoard1;
     protected Player player2;
@@ -92,6 +90,7 @@ public class GameMC {
             // Add the calculated move to the list of legal plays
             legalMoves.add(new Move(placementsOfMove));
 
+
         }
         return legalMoves;
     }
@@ -153,9 +152,14 @@ public class GameMC {
         return new GameStateMC(handCards, cardsOnOwnAscendingDiscardPile, cardsOnOwnDescendingDiscardPile, cardsOnOpponentsAscendingDiscardPile, cardsOnOpponentsDescendingDiscardPile);
     }
 
-    public void nextStateAfterMove(GameStateMC state, Move move){
-        boolean player = state.isPlayer(true)? true : false;
-        this.applyMove(move, player);
+    public void nextStateAfterMove(GameStateMC state, Move move) {
+        try {
+            boolean player = state.isPlayer(true) ? true : false;
+
+            this.applyMove(move, player);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
 
     }
 
@@ -254,13 +258,15 @@ public class GameMC {
     }
 
     public boolean hasPlayer2Won() {
+        boolean b = this.playerBoard2.getHandCards().isEmpty() && this.playerBoard2.getDrawPile().isEmpty();
+        //System.out.println("inside hasplayer2won" + b);
         return this.playerBoard2.getHandCards().isEmpty() && this.playerBoard2.getDrawPile().isEmpty();
     }
 
     public boolean hasPlayer1Won() {
 
         boolean a = this.playerBoard1.getHandCards().isEmpty() && this.playerBoard1.getDrawPile().isEmpty();
-        System.out.println("inside hasplayer1won" + a);
+        //System.out.println("inside hasplayer1won" + a);
         return this.playerBoard1.getHandCards().isEmpty() && this.playerBoard1.getDrawPile().isEmpty();
     }
 

@@ -12,18 +12,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PlayerBoardMC {
-    private Player player;
-    private AscendingDiscardPile ascendingDiscardPile;
-    private DescendingDiscardPile descendingDiscardPile;
-    private DrawPileMC drawPile;
-    private List<Card> handCards;
+    protected Player player;
+    protected AscendingDiscardPile ascendingDiscardPile;
+    protected DescendingDiscardPile descendingDiscardPile;
+    protected DrawPileMC drawPile;
+    protected List<Card> handCards = new ArrayList<>();
 
     public PlayerBoardMC(Player player, AscendingDiscardPile ascendingDiscardPile, DescendingDiscardPile descendingDiscardPile, DrawPileMC drawPile, List<Card> handCards, long randomSeed) {
         this.player = player;
         this.ascendingDiscardPile = ascendingDiscardPile;
         this.descendingDiscardPile = descendingDiscardPile;
         this.drawPile = drawPile;
-        this.handCards = handCards;
+        this.handCards.addAll(handCards);
         //this.drawFullCards();
     }
 

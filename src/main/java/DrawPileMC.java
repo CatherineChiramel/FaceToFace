@@ -24,7 +24,7 @@ public class DrawPileMC {
     private void initialize(List<Integer> cardNumbers) {
         Constructor<Card> constructor = null;
         try {
-            constructor = Card.class.getDeclaredConstructor();
+            constructor = Card.class.getDeclaredConstructor(int.class);
         } catch (NoSuchMethodException e) {
             e.printStackTrace();
         }
