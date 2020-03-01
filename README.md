@@ -13,8 +13,14 @@ The task is to find the best move possible in a state from the set of all legal 
  As it tries new paths, it gains more knowledge about which paths are good and should be tried next.
  
  For this Monte Carlo does multiple simulations of the game from a given state until a winner is obtained. These are called 
- Monte Carlo simulations. The best move to be applied in a given state is obtained after many such simulations. MCTS has 4 main steps: 
- Selection, Expansion, Simulation and Back-propagation. These four phases of MCTS is implemented in the 
+ Monte Carlo simulations. The best move to be applied in a given state is obtained after many such simulations. 
+ A state in our game consists of information about the current hand cards of the player, the set of cards in ascending 
+ card piles of both the players and the set of cards in the descending card piles of both the players. From the game state 
+ of the current player, the state of the opponent is assumed. These information are used to perform MCTS from the given state.
+ 
+ The game states constitute the nodes in the tree created by MCTS. The edge in the tree corresponds to a legal move applicable 
+ in that state. The successor node of a node denotes the resulting state after applying the move. 
+ MCTS has 4 main phases: Selection, Expansion, Simulation and Back-propagation. These four phases of MCTS is implemented in the 
  [Montecarlo.java](https://github.com/CatherineChiramel/FaceToFace/blob/master/src/main/java/Montecarlo.java).
  
 ## Execution
