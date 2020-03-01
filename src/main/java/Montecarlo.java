@@ -3,6 +3,7 @@ import de.upb.isml.thegamef2f.engine.Move;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 /**
  * Class implementing Monte Carlo Tree Search
@@ -12,17 +13,23 @@ public class Montecarlo {
      *  {@link GameMC} The instance of game which can be used to get the rules and legal moves
      */
     protected GameMC gameMC;
+
     /**
      *  The square of the bias parameter in the UCB1 algorithm; defaults to 2
      */
     protected Integer ucb1Param = 2;
+
     /**
      *  The map that maps states to nodes in the Monte Carlo tree.
      */
     protected Map<Integer, MontecarloNode> nodeMap;
     /**
+     *  {@link Random} object to create random index
+     */
+    protected Random random = new Random(12345L);
+    /**
      * Constructor
-     * @param gameMC Instatnce of game for MCTS simulations
+     * @param gameMC Instance of game for MCTS simulations
      * @param ucb1Param The UCB1 explore parameter
      */
     public Montecarlo( GameMC gameMC, Integer ucb1Param){
@@ -72,11 +79,11 @@ public class Montecarlo {
      */
     public MontecarloNode expand(MontecarloNode node){
         List<Move> plays = node.unexpandedPlays();
-        int index = (int) Math.floor(Math.random() * plays.size());
+        int index = this.random.nextInt(plays.size());
         Move play = plays.get(index);
-        this.gameMC.nextStateAfterMove(node.stateMC,play);
+        this.gameMC.nextStateAfterMove(node.stateMC, play);
         GameStateMC childState;
-        if(false){
+        if(node.stateMC.isPlayer(true)){
             childState = this.gameMC.getGameState(false);
         }
         else{
@@ -103,27 +110,30 @@ public class Montecarlo {
             Move moveOfPlayer = null;
             try {
                 List<Move> plays = this.gameMC.legalPlays(node.stateMC);
-                Move play = plays.get((int)Math.floor(Math.random() * plays.size()));
-                moveOfPlayer = play;
+                moveOfPlayer = plays.get(this.random.nextInt(plays.size()));
             } catch (Exception var7) {
                 System.err.println("Exception in move of player : " + var7.getMessage());
             }
             if(node.stateMC.isPlayer(true)) {
                 if (!this.gameMC.isMoveValid(moveOfPlayer, true)) {
                     win1 = 2;
+                    return win1;
                 }
                 this.gameMC.applyMove(moveOfPlayer, true);
                 if (this.gameMC.hasPlayer1Won()) {
                     win1 = 1;
+                    return win1;
                 }
             }
             else {
                 if (!this.gameMC.isMoveValid(moveOfPlayer, false)) {
                     win1 = 1;
+                    return win1;
                 }
                 this.gameMC.applyMove(moveOfPlayer, false);
                 if (this.gameMC.hasPlayer2Won()) {
                     win1 = 2;
+                    return win1;
                 }
             }
         }
@@ -144,7 +154,7 @@ public class Montecarlo {
             else
                 win = false;
             if(node.stateMC.isPlayer(win)){
-                node.nWins +=1;
+                node.nWins += 1;
             }
             node = node.parentNode;
         }
@@ -152,17 +162,18 @@ public class Montecarlo {
     /**
      * From the available statistics, calculate the best move from the given state
      * @param stateMC {@link GameStateMC} The state to get the best play from
-     * @param policy
+     * @param policy Robust or Max child approach
      * @return {@link Move} The best move in the given state
      */
     public Move bestPlay( GameMC gameMC, GameStateMC stateMC, String policy){
         this.makeNode(stateMC);
-        if(this.nodeMap.get(stateMC.hashCode()).isFullyExpanded() == false){
-            System.err.println("Not enough information");
-        }
+        Move bestplay = null;
+//        if(this.nodeMap.get(stateMC.hashCode()).isFullyExpanded() == false){
+//            System.err.println("Not enough information");
+//        }
         MontecarloNode node = this.nodeMap.get(stateMC.hashCode());
         List<Move> allPlays = node.allPlays();
-        Move bestplay = null;
+
         if(policy.equals("robust")){
             int max = -999999;
             for(Move play: allPlays){
@@ -171,20 +182,23 @@ public class Montecarlo {
                     if(childNode.nPlays > max){
                         bestplay = play;
                         max = childNode.nPlays;
-                        //bestplay = gameMC.legalPlays(stateMC).get(1);
                     }
                 } else {
-                    bestplay = gameMC.legalPlays(stateMC).get(1);
+                    bestplay = gameMC.legalPlays(stateMC).get(0);
                 }
             }
         } else if(policy.equals("max")) {
             double max = -99999;
             for(Move play: allPlays){
                 MontecarloNode childNode = node.childNode(play);
-                double ratio = childNode.nWins / childNode.nPlays;
-                if(ratio > max){
-                    bestplay = play;
-                    max = ratio;
+                if(childNode != null) {
+                    double ratio = childNode.nWins / childNode.nPlays;
+                    if (ratio > max) {
+                        bestplay = play;
+                        max = ratio;
+                    }
+                }else {
+                    bestplay = gameMC.legalPlays(stateMC).get(0);
                 }
             }
         }
@@ -208,7 +222,7 @@ public class Montecarlo {
                 winner = 1;
             else if (this.gameMC.hasPlayer2Won())
                 winner = 2;
-            if(node.isLeaf() && winner == null){
+            if(!node.isLeaf() && winner == null){
                 node = this.expand(node);
                 winner = this.simulate(node);
             }
@@ -216,8 +230,6 @@ public class Montecarlo {
                 winner = 2;
             }
             this.backpropogate(node, winner);
-            if(winner == 0)
-                draws ++;
             totalSims ++;
         }
         MontecarloStatistics stats = new MontecarloStatistics(timeout, totalSims, draws);

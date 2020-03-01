@@ -4,9 +4,12 @@
 //
 
 
-import de.upb.isml.thegamef2f.engine.Move;
 import de.upb.isml.thegamef2f.engine.board.Card;
 import java.util.List;
+
+/**
+ * Class to keep track of the game state of the players in Monte Carlo simulations
+ */
 
 public class GameStateMC {
     private List<Card> handCards;
@@ -62,22 +65,13 @@ public class GameStateMC {
     }
 
     public boolean isPlayer(boolean player){
-        //System.out.println("inside isplayer method");
         try{
         if(this.player == player){
-            //System.out.println("inside if");
             return true;
         }}catch (Exception e){
             e.printStackTrace();
         }
-
         return false;
     }
 
-    public String hash(GameStateMC gameStateMC, Move move){
-        String stateHashcode = Integer.toString(gameStateMC.hashCode());
-        String moveHashcode = Integer.toString(move.hashCode());
-        String hash = stateHashcode + moveHashcode;
-        return hash;
-    }
 }

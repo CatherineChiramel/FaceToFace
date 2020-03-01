@@ -27,6 +27,14 @@ public class MontecarloPlayer implements Player {
      * Name of the player
      */
     protected String name;
+    /**
+     * The UBC1 parameter
+     */
+    protected Integer UCB1value = 2;
+    /**
+     * Policy which decides if Robust child or Max child should be used
+     */
+    protected String policy = "robust";
 
     /**
      * Constructor
@@ -36,6 +44,25 @@ public class MontecarloPlayer implements Player {
         this.name = name;
     }
 
+    /**
+     * Constructor that takes the UCB1 parameter as an argument
+     * @param name
+     * @param UCB1value exploration parameter
+     */
+    public MontecarloPlayer (String name, Integer UCB1value) {
+        this.name = name;
+        this.UCB1value = UCB1value;
+    }
+
+    /**
+     * Constructor which takes the policy as an argument
+     * @param name
+     * @param policy Robust Child or Max Child
+     */
+    public MontecarloPlayer (String name, String policy) {
+        this.name = name;
+        this.policy = policy;
+    }
     @Override
     public void initialize(long l) {
         this.random = new Random(l);
@@ -64,14 +91,14 @@ public class MontecarloPlayer implements Player {
         // Set the player to be false as the Monte Carlo player is player2
         stateMC.player = false;
         // Start MCTS
-        Montecarlo montecarlo = new Montecarlo(gameMC, 2);
-        Move play;
+        Montecarlo montecarlo = new Montecarlo(gameMC, this.UCB1value);
+        Move play = null;
         try {
-            montecarlo.runSearch(stateMC, 1);
-            play = montecarlo.bestPlay(gameMC, stateMC, "robust");
+            montecarlo.runSearch(stateMC, 3);
+            play = montecarlo.bestPlay(gameMC, stateMC, this.policy);
         }catch (Exception e){
             e.printStackTrace();
-            play = gameMC.legalPlays(stateMC).get(1);
+            play = gameMC.legalPlays(stateMC).get(0);
         }
         return play;
     }

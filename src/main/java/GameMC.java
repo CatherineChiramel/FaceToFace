@@ -5,10 +5,12 @@ import de.upb.isml.thegamef2f.engine.player.Player;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * Class to provide instance of the game for Monte Carlo Tree Search without modifying the real Game instance.
+ */
 
 public class GameMC {
     protected Random random = new Random();
-    //protected GameHistory gameHistory;
     protected Player player1;
     protected PlayerBoardMC playerBoard1;
     protected Player player2;
@@ -21,8 +23,12 @@ public class GameMC {
         this.playerBoard2 = playerBoard2;
     }
 
+    /**
+     * Function to calculate the legal moves in a given state
+     * @param gameState The game state from which the legal moves should be calculated
+     * @return list of legal {@link Move}
+     */
     public List<Move> legalPlays(GameStateMC gameState){
-        //System.out.println("inside legalPlays");
         GameStateMC currentGameState = gameState;
         boolean placedOnOpponentsPiles = false;
         List<Move> legalMoves = new ArrayList<Move>();
@@ -44,14 +50,13 @@ public class GameMC {
                 }
             }
         }
-        //System.out.println("validplacements have been calculated");
         if (validPlacements.isEmpty()) {
             return null;
         }
         // Calculate moves from each of the valid placements possible
-
         for(int i=0; i<validPlacements.size(); i++){
             placementsOfMove = new ArrayList();
+            placedOnOpponentsPiles = false;
             if (validPlacements.get(i).getPosition() == CardPosition.OPPONENTS_ASCENDING_DISCARD_PILE || validPlacements.get(i).getPosition() == CardPosition.OPPONENTS_DESCENDING_DISCARD_PILE) {
                 placedOnOpponentsPiles = true;
             }
@@ -59,13 +64,14 @@ public class GameMC {
             randomPlacement = validPlacements.get(i);
             currentGameState = this.computeNewGameStateAfterPlacement(currentGameState, randomPlacement);
             for(;!currentGameState.getHandCards().isEmpty(); currentGameState = this.computeNewGameStateAfterPlacement(currentGameState, randomPlacement)) {
-                //System.out.println("inside for loop");
+
                 List<Placement> validPlacements1 = new ArrayList();
                 Iterator var61 = currentGameState.getHandCards().iterator();
                 while(var61.hasNext()) {
                     Card card = (Card)var61.next();
                     CardPosition[] var8 = CardPosition.values();
                     int var9 = var8.length;
+
                     for(int var10 = 0; var10 < var9; ++var10) {
                         CardPosition position = var8[var10];
                         Placement placement = new Placement(card, position);
@@ -74,9 +80,8 @@ public class GameMC {
                         }
                     }
                 }
-                //System.out.println("after while");
+
                 if (validPlacements1.isEmpty()) {
-                    //System.out.println("validplacements1 is empty");
                      break;
                 }
                 //System.out.println("sfgdj" +this.random.nextInt(validPlacements1.size()));
@@ -187,8 +192,6 @@ public class GameMC {
         } else {
             this.playerBoard2.drawTwoCards();
         }
-
-        //this.gameHistory.addMove(player, move, this.generateGlobalGameState());
     }
 
     private boolean applyPlacement(boolean player1, Placement placement) {
@@ -305,5 +308,6 @@ public class GameMC {
             return false;
         }
     }
+
 
 }

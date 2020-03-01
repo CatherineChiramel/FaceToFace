@@ -2,6 +2,9 @@ import de.upb.isml.thegamef2f.engine.board.Card;
 
 import java.util.List;
 
+/**
+ * Class to keep track of the global game state in Monte Carlo simulations
+ */
 public class GlobalGameStateMC {
     private int sizeOfDrawPileOfPlayer1;
     private int sizeOfDrawPileOfPlayer2;
