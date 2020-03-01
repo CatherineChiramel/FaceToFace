@@ -23,5 +23,37 @@ The task is to find the best move possible in a state from the set of all legal 
  MCTS has 4 main phases: Selection, Expansion, Simulation and Back-propagation. These four phases of MCTS is implemented in the 
  [Montecarlo.java](https://github.com/CatherineChiramel/FaceToFace/blob/master/src/main/java/Montecarlo.java).
  
+ ### Selection
+ From a given node a successor node has to be selected from the available successor nodes. 
+ This selection process is applied recursively until a leaf node is reached. The node with highest UCB1 
+ value is selected as the successor node.
+ 
+ 
+ UCB1<sub>i</sub> = w<sub>i</sub>i / s<sub>i</sub> + c*sqrt(ln s<sub>p</sub> / s<sub>i</sub>)
+ 
+ UCB1<sub>i</sub> = UCB1 value for node i
+ 
+ w<sub>i</sub> = number of wins for node i
+ 
+ s<sub>i</sub> = number of simulations of node i
+ 
+ s<sub>p</sub> = number of simulations of parent node
+ 
+ c = exploration parameter
+ 
+ ### Expansion
+ If there are multiple unexpanded moves, we choose a move randomly and compute the child node 
+ which corresponds to the next state.
+ 
+ ### Simulation
+ From the new node that was created during expansion phase, the game is played until it 
+ finishes and a winner emerges.
+ 
+ ### Backpropagation
+ After the simulation phase, the s<sub>i</sub> and w<sub>i</sub> values for all the visited nodes are updated. 
+ This information is used to calculate the UCB1 value of each of these nodes.
+ 
+ 
+ 
 ## Execution
 This source code can be executed by simply executing the Main() method.
