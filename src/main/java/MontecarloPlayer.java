@@ -34,7 +34,7 @@ public class MontecarloPlayer implements Player {
     /**
      * Policy which decides if Robust child or Max child should be used
      */
-    protected String policy = "robust";
+    protected String policy = "max";
 
     /**
      * Constructor

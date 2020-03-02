@@ -54,7 +54,7 @@ public class MontecarloNode {
         this.stateMC = stateMC;
         this.unexpandedPlays = unexpandedPlays;
         this.nPlays = 0;
-        this.nWins = 1;
+        this.nWins = 0;
 
         for(Move play: unexpandedPlays){
             childPlayMap.put(play.hashCode(),play);
@@ -147,6 +147,6 @@ public class MontecarloNode {
      * @return The UCB1 value of this node
      */
     public double getUCB1(double biasParam){
-        return (this.nPlays/this.nWins) + Math.sqrt(biasParam * Math.log(this.parentNode.nPlays)/this.nPlays);
+        return (this.nWins/this.nPlays) + Math.sqrt(biasParam * Math.log(this.parentNode.nPlays)/this.nPlays);
     }
 }
