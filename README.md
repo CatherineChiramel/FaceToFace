@@ -29,7 +29,7 @@ The task is to find the best move possible in a state from the set of all legal 
  value is selected as the successor node.
  
  
- UCB1<sub>i</sub> = w<sub>i</sub>i / s<sub>i</sub> + c*sqrt(ln s<sub>p</sub> / s<sub>i</sub>)
+ UCB1<sub>i</sub> = w<sub>i</sub> / s<sub>i</sub> + c*sqrt(ln s<sub>p</sub> / s<sub>i</sub>)
  
  UCB1<sub>i</sub> = UCB1 value for node i
  
