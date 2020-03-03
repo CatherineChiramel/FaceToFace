@@ -56,4 +56,4 @@ The task is to find the best move possible in a state from the set of all legal 
  
  
 ## Execution
-This source code can be executed by simply executing the Main() method.
+The .jar file for the game engine is already added in the project directory of this repo. But in case if it is not enough, make sure to download the .jar game engine and add the corresponding dependency to pom.xml file. The code is written in Java 11.
