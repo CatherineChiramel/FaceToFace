@@ -88,6 +88,9 @@ public class MontecarloPlayer implements Player {
         PlayerBoardMC playerBoard2 = this.getPlayerBoard(stateMC, this);
         // Create temporary instance of Game to be played in the MCTS simulations
         GameMC gameMC = new GameMC(player1, playerBoard1, this, playerBoard2);
+        if(gameMC.legalPlays(stateMC).isEmpty()) {
+            return null;
+        }
         // Set the player to be false as the Monte Carlo player is player2
         stateMC.player = false;
         // Start MCTS
@@ -97,8 +100,8 @@ public class MontecarloPlayer implements Player {
             montecarlo.runSearch(stateMC, 3);
             play = montecarlo.bestPlay(gameMC, stateMC, this.policy);
         }catch (Exception e){
-            e.printStackTrace();
-            play = gameMC.legalPlays(stateMC).get(0);
+            if(!gameMC.legalPlays(stateMC).isEmpty())
+                play = gameMC.legalPlays(stateMC).get(0);
         }
         return play;
     }

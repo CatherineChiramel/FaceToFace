@@ -44,6 +44,8 @@ public class Montecarlo {
     public void makeNode(GameStateMC stateMC){
         if(!this.nodeMap.containsKey(stateMC.hashCode())){
             List<Move> unexpandedPlays = this.gameMC.legalPlays(stateMC);
+            if(unexpandedPlays.isEmpty())
+                return;
             MontecarloNode node = new MontecarloNode(null, null, stateMC, unexpandedPlays);
             this.nodeMap.put(stateMC.hashCode(), node);
         }
@@ -166,39 +168,46 @@ public class Montecarlo {
      * @return {@link Move} The best move in the given state
      */
     public Move bestPlay( GameMC gameMC, GameStateMC stateMC, String policy){
-        this.makeNode(stateMC);
         Move bestplay = null;
+        this.makeNode(stateMC);
+
 //        if(this.nodeMap.get(stateMC.hashCode()).isFullyExpanded() == false){
 //            System.err.println("Not enough information");
 //        }
-        MontecarloNode node = this.nodeMap.get(stateMC.hashCode());
-        List<Move> allPlays = node.allPlays();
+        MontecarloNode node = null;
+        if(this.nodeMap.get(stateMC.hashCode()) != null) {
+            node = this.nodeMap.get(stateMC.hashCode());
+            List<Move> allPlays = node.allPlays();
 
-        if(policy.equals("robust")){
-            int max = -999999;
-            for(Move play: allPlays){
-                MontecarloNode childNode = node.childNode(play);
-                if(childNode != null){
-                    if(childNode.nPlays > max){
-                        bestplay = play;
-                        max = childNode.nPlays;
+            if(policy.equals("robust")){
+                int max = -999999;
+                for(Move play: allPlays){
+                    MontecarloNode childNode = node.childNode(play);
+                    if(childNode != null){
+                        if(childNode.nPlays > max){
+                            bestplay = play;
+                            max = childNode.nPlays;
+                        }
+                    } else {
+                        if(!gameMC.legalPlays(stateMC).isEmpty())
+                            bestplay = gameMC.legalPlays(stateMC).get(0);
+
                     }
-                } else {
-                    bestplay = gameMC.legalPlays(stateMC).get(0);
                 }
-            }
-        } else if(policy.equals("max")) {
-            double max = -99999;
-            for(Move play: allPlays){
-                MontecarloNode childNode = node.childNode(play);
-                if(childNode != null) {
-                    double ratio = childNode.nWins / childNode.nPlays;
-                    if (ratio > max) {
-                        bestplay = play;
-                        max = ratio;
+            } else if(policy.equals("max")) {
+                double max = -99999;
+                for (Move play : allPlays) {
+                    MontecarloNode childNode = node.childNode(play);
+                    if (childNode != null) {
+                        double ratio = childNode.nWins / childNode.nPlays;
+                        if (ratio > max) {
+                            bestplay = play;
+                            max = ratio;
+                        }
+                    } else {
+                        if (!gameMC.legalPlays(stateMC).isEmpty())
+                            bestplay = gameMC.legalPlays(stateMC).get(0);
                     }
-                }else {
-                    bestplay = gameMC.legalPlays(stateMC).get(0);
                 }
             }
         }
@@ -211,11 +220,15 @@ public class Montecarlo {
      * @return {@link MontecarloStatistics} Search statistics
      */
     public MontecarloStatistics runSearch(GameStateMC stateMC, Integer timeout){
+
         this.makeNode(stateMC);
         Integer draws = 0;
         Integer totalSims = 0;
         long end = System.currentTimeMillis() + timeout * 1000;
         while(System.currentTimeMillis() < end){
+            if(this.nodeMap.get(stateMC.hashCode()) == null) {
+                break;
+            }
             MontecarloNode node = this.select(stateMC);
             Integer winner = null;
             if(this.gameMC.hasPlayer1Won())
