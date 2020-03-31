@@ -31,7 +31,7 @@ public class GameMC {
     public List<Move> legalPlays(GameStateMC gameState){
         GameStateMC currentGameState = gameState;
         boolean placedOnOpponentsPiles = false;
-        List<Move> legalMoves = new ArrayList<Move>();
+        List<Move> legalMoves = new ArrayList();
         ArrayList placementsOfMove;
         Placement randomPlacement;
         List<Placement> validPlacements = new ArrayList();

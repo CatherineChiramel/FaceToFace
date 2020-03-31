@@ -178,7 +178,7 @@ public class Montecarlo {
         if(this.nodeMap.get(stateMC.hashCode()) != null) {
             node = this.nodeMap.get(stateMC.hashCode());
             List<Move> allPlays = node.allPlays();
-
+            List<Move> moves = gameMC.legalPlays(stateMC);
             if(policy.equals("robust")){
                 int max = -999999;
                 for(Move play: allPlays){
@@ -189,8 +189,8 @@ public class Montecarlo {
                             max = childNode.nPlays;
                         }
                     } else {
-                        if(!gameMC.legalPlays(stateMC).isEmpty())
-                            bestplay = gameMC.legalPlays(stateMC).get(0);
+                        if(!moves.isEmpty())
+                            bestplay = moves.get(0);
 
                     }
                 }
@@ -205,8 +205,8 @@ public class Montecarlo {
                             max = ratio;
                         }
                     } else {
-                        if (!gameMC.legalPlays(stateMC).isEmpty())
-                            bestplay = gameMC.legalPlays(stateMC).get(0);
+                        if (!moves.isEmpty())
+                            bestplay = moves.get(0);
                     }
                 }
             }
@@ -217,13 +217,11 @@ public class Montecarlo {
      * From given state, run as many simulations as possible until the time limit, building statistics
      * @param stateMC {@link GameStateMC} The state to run the search from
      * @param timeout The time to run the simulations for, in seconds
-     * @return {@link MontecarloStatistics} Search statistics
+     *
      */
-    public MontecarloStatistics runSearch(GameStateMC stateMC, Integer timeout){
+    public void runSearch(GameStateMC stateMC, Integer timeout){
 
         this.makeNode(stateMC);
-        Integer draws = 0;
-        Integer totalSims = 0;
         long end = System.currentTimeMillis() + timeout * 1000;
         while(System.currentTimeMillis() < end){
             if(this.nodeMap.get(stateMC.hashCode()) == null) {
@@ -243,27 +241,8 @@ public class Montecarlo {
                 winner = 2;
             }
             this.backpropogate(node, winner);
-            totalSims ++;
         }
-        MontecarloStatistics stats = new MontecarloStatistics(timeout, totalSims, draws);
-        return stats;
+
     }
 
-//    public StateStats getStats(GameStateMC stateMC) {
-//        MontecarloNode node = this.nodeMap.get(stateMC.hashCode());
-//        ChildStats childStat;
-//        StateStats stats = new StateStats(node.nPlays, node.nWins, new ArrayList<>());
-//        for(Integer childKey: node.childNodeMap.keySet()){
-//            if(node.childNodeMap.get(childKey) == null){
-//                childStat = new ChildStats(node.childPlayMap.get(childKey), null, null);
-//                stats.children.add(childStat);
-//            }
-//            else {
-//                childStat = new ChildStats(node.childPlayMap.get(childKey), node.nPlays, node.nWins);
-//                stats.children.add(childStat);
-//            }
-//
-//        }
-//        return stats;
-//    }
 }

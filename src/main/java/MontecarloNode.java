@@ -57,6 +57,7 @@ public class MontecarloNode {
         this.nWins = 0;
 
         for(Move play: unexpandedPlays){
+
             childPlayMap.put(play.hashCode(),play);
             childNodeMap.put(play.hashCode(),null);
         }
