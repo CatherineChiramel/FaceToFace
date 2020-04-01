@@ -69,7 +69,12 @@ public class MontecarloNode {
      * @return {@link MontecarloNode} child node
      */
     public  MontecarloNode childNode(Move play){
-        MontecarloNode child = this.childNodeMap.get(play.hashCode());
+        MontecarloNode child = null;
+        try{
+            child = this.childNodeMap.get(play.hashCode());
+        }catch (Exception e){
+            return null;
+        }
         return child;
     }
 
@@ -83,13 +88,18 @@ public class MontecarloNode {
      * @return {@link MontecarloNode} child node
      */
     public MontecarloNode expand(Move play, GameStateMC childState, List<Move> unexpandedPlays){
-        if(!this.childPlayMap.containsKey(play.hashCode())){
+        try {
+            if(!this.childPlayMap.containsKey(play.hashCode())){
+                return null;
+            }
+            MontecarloNode childNode = new MontecarloNode(this, play, childState, unexpandedPlays);
+            this.childPlayMap.put(play.hashCode(), play);
+            this.childNodeMap.put(play.hashCode(), childNode);
+            return childNode;
+        } catch (Exception e) {
             return null;
         }
-        MontecarloNode childNode = new MontecarloNode(this, play, childState, unexpandedPlays);
-        this.childPlayMap.put(play.hashCode(), play);
-        this.childNodeMap.put(play.hashCode(), childNode);
-        return childNode;
+
     }
 
     /**
@@ -98,8 +108,12 @@ public class MontecarloNode {
      */
     public List<Move> allPlays() {
         List<Move> plays = new ArrayList<Move>();
-        for(Integer key: this.childPlayMap.keySet()){
-            plays.add(childPlayMap.get(key));
+        try {
+            for(Integer key: this.childPlayMap.keySet()){
+                plays.add(childPlayMap.get(key));
+            }
+        } catch (Exception e) {
+            return plays;
         }
         return plays;
     }
@@ -110,11 +124,17 @@ public class MontecarloNode {
      */
     public List<Move> unexpandedPlays(){
         List<Move> plays = new ArrayList<Move>();
-        for(Integer key: this.childNodeMap.keySet()){
-            if(this.childNodeMap.get(key) == null)
-                plays.add(childPlayMap.get(key));
+        try {
+            for(Integer key: this.childNodeMap.keySet()){
+                if(this.childNodeMap.get(key) == null)
+                    plays.add(childPlayMap.get(key));
+            }
+            return  plays;
+        } catch (Exception e){
+            return plays;
         }
-        return  plays;
+
+
     }
 
     /**

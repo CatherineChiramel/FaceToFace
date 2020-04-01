@@ -75,28 +75,36 @@ public class MontecarloPlayer implements Player {
      */
     @Override
     public Move computeMove(GameState gameState) {
+        Move play = null;
         List<Card> handCards = gameState.getHandCards();
         List<Card> cardsOnOwnAscendingDiscardPile = gameState.getCardsOnOwnAscendingDiscardPile();
         List<Card> cardsOnOwnDescendingDiscardPile = gameState.getCardsOnOwnDescendingDiscardPile();
         List<Card> cardsOnOpponentsAscendingDiscardPile = gameState.getCardsOnOpponentsAscendingDiscardPile();
         List<Card> cardsOnOpponentsDescendingDiscardPile = gameState.getCardsOnOpponentsDescendingDiscardPile();
         // Create the starting state from MCTS simulations
+
         GameStateMC stateMC = new GameStateMC(handCards,cardsOnOwnAscendingDiscardPile, cardsOnOwnDescendingDiscardPile, cardsOnOpponentsAscendingDiscardPile, cardsOnOpponentsDescendingDiscardPile);
         // Create temporary playerboards instances for both the players to be used in MCTS simulations
+
         Player player1 = new RandomPlayer("a");
-        PlayerBoardMC playerBoard1 = this.getPlayerBoard(this.opponentGameState(stateMC), player1);
-        PlayerBoardMC playerBoard2 = this.getPlayerBoard(stateMC, this);
-        // Create temporary instance of Game to be played in the MCTS simulations
-        GameMC gameMC = new GameMC(player1, playerBoard1, this, playerBoard2);
-        List<Move> moves = gameMC.legalPlays(stateMC);
-        if(moves.isEmpty()) {
-            return null;
-        }
-        stateMC.player = false;
-        // Start MCTS
-        Montecarlo montecarlo = new Montecarlo(gameMC, this.UCB1value);
-        Move play = null;
+        PlayerBoardMC playerBoard1, playerBoard2;
+
+
+        GameMC gameMC;
+        List<Move> moves = new ArrayList<>();
+        Montecarlo montecarlo;
         try {
+            playerBoard1 = this.getPlayerBoard(this.opponentGameState(stateMC), player1);
+            playerBoard2 = this.getPlayerBoard(stateMC, this);
+            // Create temporary instance of Game to be played in the MCTS simulations
+            gameMC = new GameMC(player1, playerBoard1, this, playerBoard2);
+            moves = gameMC.legalPlays(stateMC);
+            if(moves.isEmpty()) {
+                return null;
+            }
+            stateMC.player = false;
+            // Start MCTS
+            montecarlo = new Montecarlo(gameMC, this.UCB1value);
             montecarlo.runSearch(stateMC, 1);
             play = montecarlo.bestPlay(gameMC, stateMC, this.policy);
         }catch (Exception e){
